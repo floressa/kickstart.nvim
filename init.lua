@@ -291,32 +291,12 @@ do
   }
 
   -- [[ Colorscheme ]]
-  -- You can easily change to a different colorscheme.
-  -- Change the name of the colorscheme plugin below, and then
-  -- change the command under that to load whatever the name of that colorscheme is.
-  --
-  -- If you want to see what colorschemes are already installed, you can use `:Telescope colorscheme`.
-  vim.pack.add { gh 'folke/tokyonight.nvim' }
-  ---@diagnostic disable-next-line: missing-fields
-  require('tokyonight').setup {
-    styles = {
-      comments = { italic = false }, -- Disable italics in comments
-    },
-  }
-
-  -- Load the colorscheme here.
-  -- Like many other themes, this one has different styles, and you could load
-  -- any other, such as 'tokyonight-storm', 'tokyonight-moon', or 'tokyonight-day'.
-  -- vim.cmd.colorscheme 'tokyonight-night'
-
-  vim.pack.add({
-    {
-      src = "https://github.com/rose-pine/neovim",
-      name = "rose-pine",
-    },
-  })
-  require("rose-pine").setup()
-  vim.cmd("colorscheme rose-pine")
+  -- Pixel uses the terminal ANSI palette, allowing WezTerm to control the
+  -- editor colors alongside the rest of the terminal UI.
+  vim.pack.add { gh 'bjarneo/pixel.nvim' }
+  vim.cmd.colorscheme 'pixel'
+  vim.api.nvim_set_hl(0, 'Normal', { bg = 'none' })
+  vim.api.nvim_set_hl(0, 'NormalFloat', { bg = 'none' })
 
   -- Highlight todo, notes, etc in comments
   vim.pack.add { gh 'folke/todo-comments.nvim' }
@@ -361,6 +341,23 @@ do
   local statusline = require 'mini.statusline'
   -- Set `use_icons` to true if you have a Nerd Font
   statusline.setup { use_icons = vim.g.have_nerd_font }
+
+  -- Pixel uses terminal ANSI colors. These extended ANSI indexes are
+  -- defined in WezTerm's palette, allowing the backgrounds to stay visible
+  -- while remaining subtler than the theme's bright gray.
+  local function set_terminal_background(name, color_index)
+    local highlight = vim.api.nvim_get_hl(0, { name = name, link = false }) --[[@as vim.api.keyset.highlight]]
+    highlight.ctermbg = color_index
+    vim.api.nvim_set_hl(0, name, highlight)
+  end
+
+  set_terminal_background('CursorLine', 24)
+  set_terminal_background('StatusLine', 25)
+  set_terminal_background('StatusLineNC', 25)
+  set_terminal_background('MiniStatuslineDevinfo', 25)
+  set_terminal_background('MiniStatuslineFileinfo', 25)
+  set_terminal_background('MiniStatuslineFilename', 25)
+  set_terminal_background('MiniStatuslineInactive', 25)
 
   -- You can configure sections in the statusline by overriding their
   -- default behavior. For example, here we set the section for
